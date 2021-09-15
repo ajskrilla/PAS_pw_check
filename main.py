@@ -55,11 +55,10 @@ def get_pw_info(c):
 # Write csv file
 def write_to_csv(wanted):
     # Check to see the OS
-    time = str(datetime.now())
     if os.name == "posix":
-        path = os.path.join(os.path.join(os.path.expanduser('~')), 'report', 'pw_report_' + time + '.csv') 
+        path = os.path.join(os.path.join(os.path.expanduser('~')), 'report', 'pw_report_' + str(time.strftime("%Y%m%d-%H%M%S")) + '.csv') 
     elif os.name == "nt":
-        path = os.path.join(os.path.join(os.environ['USERPROFILE']), 'report', 'pw_report_' + time + '.csv')
+        path = os.path.join(os.path.join(os.environ['USERPROFILE']), 'report', 'pw_report_' + str(time.strftime("%Y%m%d-%H%M%S")) + '.csv')
     if not os.path.exists(os.path.dirname(path)):
         try:
             os.makedirs(os.path.dirname(path))
