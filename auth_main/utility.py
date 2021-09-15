@@ -7,7 +7,11 @@ from .logger import f_check
 from cachetools import TTLCache
 import getpass
 import requests
-from dmc import gettoken
+# Check for DMC and if not installed, let user know and continue
+try:
+    from dmc import gettoken
+except ImportError:
+    log.warning("Please use pip install centrify.dmc to use DMC auth")
 
 # File classes
 
