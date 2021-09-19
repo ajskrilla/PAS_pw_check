@@ -1,12 +1,11 @@
-from auth_main.funct_tools import query_request, other_requests, sanitizedict, boolize
-from auth_main.logger import logging as log
-from auth_main.logger import f_check
-from auth_main.auth_check import sec_test
-from auth_main.utility import Cache
 import argparse
 import os
-from pathlib import Path
 import csv
+from pathlib import Path
+from auth_main.funct_tools import *
+from auth_main.logger import logging as log
+from auth_main.logger import f_check
+from auth_main.utility import Cache
 #https://developer.centrify.com/reference#post_servermanage-addaccounts
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Add a list of accounts from a CSV file. Examples are in data folder")
@@ -26,6 +25,7 @@ sec_test(**c.ten_info)
 def add_accounts(tenant, header,**ignored):
     if args.Path != None:
         path = os.path.abspath(args.Path)
+        csv_h_check(path, 'ParentEntityTypeOfAccount', 'User', 'Description', 'Password', 'DomainID')
         # UTF encode handling
         log.info("Path to the csv file to add accounts is: {0}".format(path))
         with open(path, 'r', encoding='utf-8-sig') as f:

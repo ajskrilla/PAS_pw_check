@@ -6,8 +6,7 @@ from datetime import datetime
 from auth_main.logger import f_check
 from auth_main.logger import logging as log
 from auth_main.utility import Cache
-from auth_main.funct_tools import query_request, other_requests
-from auth_main.auth_check import sec_test
+from auth_main.funct_tools import query_request, other_requests, sec_test
 
 # Create the object for the file
 f = f_check()

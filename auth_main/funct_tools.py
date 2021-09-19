@@ -1,9 +1,10 @@
 import requests
+import csv
 import json
 import traceback
 from .logger import logging as log
 
-# AT's Work
+
 def boolize(v):
     return {
         "TRUE": True,
@@ -11,9 +12,10 @@ def boolize(v):
     }.get(v.upper() if hasattr(v,"upper") else "", v)
 def sanitizedict(d):
     return {k:boolize(v) for k,v in d.items() if v!= ""}
-# AT's Work
+
 def rem_null(args):
     return dict((k, v) for k, v in args.items() if v != None)
+
 #RedRock Query
 # Make Header as an argument for cache as well as tenant
 class query_request:
@@ -34,6 +36,7 @@ class query_request:
         log.info("Finished Query")
         if Debug == True:
             print(json.dumps(self.parsed_json, indent=4, sort_keys=True))
+
 #for other requests
 # Make Header as an argument for cache as well as tenant
 class other_requests:
@@ -56,4 +59,30 @@ class other_requests:
         log.info("Finished request")
         if Debug == True:
             print(json.dumps(self.parsed_json, indent=4, sort_keys=True))
-#make complicated request so that it trasfers complicated objects. This will allow to arrayed dicts and whatnot
+
+# Check CSV headers and stop if they are not good
+def csv_h_check(csv_file, *headers):
+    with open(csv_file, 'r', encoding='utf-8-sig') as f:
+        d_reader = csv.DictReader(f)   
+        c_headers = d_reader.fieldnames
+        log.info("Checking the headers: {0}".format(list(headers)))
+        if list(sorted(headers)) != sorted(c_headers):
+            log.error("Header values are: {0}".format(c_headers))
+            log.error("This CSV is not compatible. Exiting.")
+            raise SystemExit(0)
+        else:
+            log.info("CSV file is good")
+            pass
+
+# Security check and bail if not good
+def sec_test(tenant, header, **ignored):
+    log.info("Going to do a security test and verify that the connection can occur, if not, will drop")
+    log.info("Testing the connection for tenant: {0}".format(tenant))
+    check = other_requests("/Security/Whoami", tenant, header).parsed_json
+    if check['success'] == False:
+        log.error("Serious issue occurred, will not continue.")
+        raise SystemExit(0)
+    log.info("Tenant: {0}".format(check['Result']["TenantId"]))
+    log.info("User: {0}".format(check['Result']["User"]))
+    log.debug("UserUuid: {0}".format(check['Result']["UserUuid"]))
+    log.info("Passed the test")
