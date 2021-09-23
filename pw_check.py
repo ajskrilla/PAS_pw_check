@@ -58,6 +58,14 @@ def inner_get_pw_info(tenant, header, **ignored):
         del pw_info['ID']
         del pw_info['IsManaged']
         del pw_info['_TableName']
+        # Construct the key dicts to ensure no Key error if first account is SSH key account
+        try:
+            pw_info['Password length']
+            pw_info['Healthy']
+        except:
+            pw_info['Healthy'] = "Cannot get health"
+            pw_info['Password length']= "Cannot get PW length"
+            
         # Yield data set
         yield pw_info
     log.info(":::End Timer::: {0}".format(datetime.now()))
@@ -80,7 +88,7 @@ def write_to_csv(wanted):
         except OSError as exc: # Guard against race condition
             if exc.errno != errno.EEXIST:
                 raise
-    with open(path, 'w') as f:
+    with open(path, 'w', encoding='utf-8-sig') as f:
         writer= csv.DictWriter(f, fieldnames=wanted[0].keys(), delimiter=',')
         writer.writeheader()
         writer.writerows(wanted)
